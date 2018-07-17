@@ -16,6 +16,12 @@ Example of how to use it:
 * If table block doesn’t  exist but any of the other do, it will fail as it will try to recreate the existing table.
 * You dont have to create the tables as sqlAlchemy will do that on your behalf but the data types won't be the best (it will create a lot of varchar(max))
 
+## How to install it
+
+```
+pip install ethToSql
+```
+
 ## How to use it
 
 Create an Object and call any native Geth function:
@@ -74,10 +80,10 @@ It will populate the 4 tables shown on the diagram below:
 ![Example](images/ER.png)
 
 
-The all the Alias will be "other" as the code that populate this table is not available here.
-A forth table called AccountBalances containing the balance of each account on each block is not being showed.
-Bear in mind that setting the getBalanceInfo flag to 1 will populate that table by calling the "eth_getBalance" function for each account that participated on a transaction in the block, which will drastically increase run time.
-A full node is necessary to use the getBalanceInfo flag for older blocks due to the state tree pruning  that takes place on light nodes.
+* The all the Aliases will be "other" as the code that populate this table is not available here.
+* A forth table called AccountBalances containing the balance of each account on each block is not being showed.
+* Bear in mind that setting the getBalanceInfo flag to 1 will populate that table by calling the "eth_getBalance" function for each account that participated on a transaction in the block, which will drastically increase run time.
+* A full node is necessary to use the getBalanceInfo flag for older blocks due to the state tree pruning  that takes place on light nodes.
 
 
 The database object exposes an execute function that can be used to run any sort of query:
@@ -96,6 +102,12 @@ ets.parseRange(1,
 ```
 Suggest setting printAtEnd = 0 because the parse range uses tqdm to track progress
 
+The parseRange method handles exception, so if a block fail for whatever reason, a row will be inserted into the "failures" table.
+
+Most of the times, the failures are due to timeouts, so calling the parse function again should work.
+There are two functions to do that, one works by block number and the other that by querying the "failures" table and calling the former function for each block on the table.
+The clean up code is pretty self explanatory adn a few examples can be seen here:
+![Example](images/cleanup.png)
 
 
 ## A few extra important details

@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='ethToSql',
-      version='0.2',
+      version='0.3',
       description='Read Data from an Ethereum node and insert into a SQL database',
       long_description=long_description,
       url='https://github.com/dmenin/EthToSql',

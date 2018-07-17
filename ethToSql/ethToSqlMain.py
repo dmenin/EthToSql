@@ -221,18 +221,18 @@ class ethToSql():
         return l
     
     
-    def CleanAllFailedBlocks(self, dbObj, alias=None, sql = None, parseAgain=True):
+    def CleanAllFailedBlocks(self, alias=None, sql = None, parseAgain=True):
         if sql == None:
-            dfFailed = dbObj.execute('select * from failures')
+            dfFailed = self.seqldb.execute('select * from failures')
         else:
-            dfFailed = dbObj.execute(sql)
+            dfFailed = self.seqldb.execute(sql)
             
         for i, r in dfFailed.iterrows():
             print ('Cleaning block: {}'.format(r['failed']))
-            self.spCleanUpFailedBlock(dbObj, r['failed'], alias, parseAgain)
+            self.spCleanUpFailedBlock(r['failed'], alias, parseAgain)
         
-    def spCleanUpFailedBlock(self, dbObj, blockNumber, alias, parseAgain=True):
-        dbObj.execute('exec spCleanUpByBlock {}'.format(blockNumber))
+    def spCleanUpFailedBlock(self, blockNumber, alias=None, parseAgain=True):
+        self.seqldb.execute('exec spCleanUpByBlock {}'.format(blockNumber))
         if parseAgain:
             self.parseBlock(blockNumber, alias)
             

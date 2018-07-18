@@ -106,7 +106,7 @@ The parseRange method handles exception, so if a block fail for whatever reason,
 
 Most of the times, the failures are due to timeouts, so calling the parse function again should work.
 There are two functions to do that, one works by block number and the other that by querying the "failures" table and calling the former function for each block on the table.
-The clean up code is pretty self explanatory adn a few examples can be seen here:
+The clean up code is pretty self explanatory and a few examples can be seen here:
 ![Example](images/cleanup.png)
 
 
@@ -115,7 +115,7 @@ The clean up code is pretty self explanatory adn a few examples can be seen here
 Please note that this was not build to be run at "production" capacity. There are in fact a lot of "shortcuts" that were taken due to the limited amount of time I had to code and the fact that this is a "one time project". 
 The process of writing to the database for example is done using the ".to_sql" function from a pandas data frame, so a lot of (probably unnecessary	) data frames are created in the process. The tables structure could also have been improved by having account keys on the transaction table for example and the "AccountAlias" and Contract table could be the same.
 
-In terms of code, the main function "parseBlock" has no exception handling it it, so it may fail during execution (although unlikely) leaving a block with missing information. I suggest wrapping the "parseBlock" call on a try except and outputing the block number that caused the error error to a table called "failures" (code example given in the end) as there is a method called "CleanAllFailedBlocks" that will loop through that table, clean the block from the DB and try to fetch it again. I say that because the code is pretty robust as I've parse over 600k blocks so the exceptions, if any, will probably be from the host eventually timing out.
+In terms of code, the main function "parseBlock" has no exception handling it it, so it may fail during execution (although unlikely) leaving a block with missing information. I suggest wrapping the "parseBlock" call on a try except and outputing the block number that caused the error error to a table called "failures" (as the code example given above) since the clean up methids are available. I say that because the code is pretty robust as I've parsed over 600k blocks so the exceptions, if any, will probably be from the host eventually timing out.
 
 Foreign keys are not being created automatically. You may want to do that manually if you are planning to download and analyse a lot of data.
 

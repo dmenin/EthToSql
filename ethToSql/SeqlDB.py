@@ -133,6 +133,7 @@ class SeqlDB(object):
                     end;
                 ''')
                 
+                #Used on the ParseBlockFunction
                 self.execute('''
                     create procedure insertIfNotExistAccAlias(@account varchar(42), @alias varchar(100))
                     as
@@ -141,4 +142,18 @@ class SeqlDB(object):
                     		insert into AccountAlias values (@account, @alias)
                     	end 
                     end;
-                ''')                    
+                ''')
+                
+                #TODO: this second procedure could replace the first completelly
+                #used on the parseAccount procedure
+                self.execute('''
+                    create procedure insertOrUpdateAccAlias(@account varchar(42), @alias varchar(100))
+                    as
+                    begin
+                    	IF NOT EXISTS(SELECT * FROM AccountAlias WHERE account = @account) begin
+                    		insert into AccountAlias values (@account, @alias)
+                    	end ELSE begin
+                    		update AccountAlias set alias = @alias where account = @account and (alias = 'other' or alias is null)
+                    	end
+                    end
+                ''')                     

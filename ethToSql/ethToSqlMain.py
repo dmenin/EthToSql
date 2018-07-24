@@ -1,4 +1,3 @@
-import sys
 from tqdm import tqdm
 tqdm.monitor_interval = 0
 import requests
@@ -7,8 +6,7 @@ import datetime
 import pandas as pd
 import numpy as np
 from .SeqlDB import SeqlDB
-#import EtherScanHTMLParser as esParser
-
+from . import EtherScamHTMLParser as esParser
 
 
 class ethToSql():
@@ -256,3 +254,42 @@ class ethToSql():
                 print ('Block {} - error: {}'.format(str(i), str(ex)))
                 df.to_sql('failures', self.seqldb.seqlEngine, if_exists='append', index=False) if SAVE_TO_DB else None    
         print(datetime.datetime.now() - startTime)
+
+    def parseAccountBlocks(self, acc, alias = '', getBalanceInfo = 0, transLimit = 99999999, updateAlias = 1):
+        print ('Scanning', acc)
+        AccAlias, nTrans  = esParser.getAccountAliasOnEtherScan(acc)
+
+        if nTrans > transLimit:
+            print ('Number of transactions ({}) greater than the limit'.format(nTrans))
+            return
+       
+        blockList = esParser.getAccountBlocks(acc)           
+        blockList.sort()
+
+        if AccAlias == '':
+            AccAlias = 'other'
+        
+        if updateAlias == 1:
+            try:
+                self.seqldb.execute("exec insertOrUpdateAccAlias '{}','{}'".format(acc, AccAlias))
+            except:
+                print ('Update alias procedure probably missing from the database. Try to set the updateAlias to 0')
+                pass           
+       
+        for b in tqdm(blockList):
+            b = int (b)
+            #the block may already be in the DB 
+            #method not ideal, but this shouldnt be a long procecss so its ok
+            r = self.seqldb.execute('select top 1 * from block where number = {}'.format(b))
+            if len(r) >0:
+                continue
+            try:
+                self.parseBlock(b, alias, getBalanceInfo = 0)
+            except Exception as ex:
+                df = pd.DataFrame({'failed': [b]})
+                df['message'] = str(ex)
+                print ('Block {} - error: {}'.format(str(b), str(ex)))
+                df.to_sql('failures', self.seqldb.seqlEngine, if_exists='append', index=False)
+        
+
+    

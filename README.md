@@ -65,6 +65,8 @@ The package offers hexToInt and intToHex functions to facilitate conversion.
 
 
 ## Core functions
+
+### Parse Single Block 
 The  main function is called "parseBlock" and it will, as the name suggests, parse a block given its number
 
 ```python
@@ -86,28 +88,45 @@ It will populate the 4 tables shown on the diagram below:
 * A full node is necessary to use the getBalanceInfo flag for older blocks due to the state tree pruning  that takes place on light nodes.
 
 
+### Run queries
+
 The database object exposes an execute function that can be used to run any sort of query:
 ```python
 print(ets.seqldb.execute('select * from block'))
 ets.seqldb.execute('delete from block')
 ```
 
+### Parse Consecutive Range of Blocks
 
 The parseRange function parses a range of blocks. It checks if the block is already on the DB to avoid parsin it twice
 
 ```python
-ets.parseRange(1,
-               20,
+ets.parseRange(1,  #start
+               20, #end
                alias = 'Test', getBalanceInfo=0, SAVE_TO_DB = True, printAtEnd = 0)
 ```
 Suggest setting printAtEnd = 0 because the parse range uses tqdm to track progress
 
-The parseRange method handles exception, so if a block fail for whatever reason, a row will be inserted into the "failures" table.
+## Parse an Account
+
+It is also possible to parse all the blocks in wich an account has transactions in.
+That is achieved using BeautifulSoup to parse the HTML from etherscam. 
+There is a hard coded limit of 100 transactions to prevent the function from running "forever" in case of big accounts, but that can be increased by increasing the "translimit" variable.
+The accout's Alias (that string besides the name) is also captured and inserted\updated on the Database if the necessary procedure is created. Can disable that by setting the updateAlias to 0.
+
+![Example](images/ParseAccount.png)
+
+
+
+## Clean up methods
+
+The parseRange and parseAccount methods handles exception, so if a block fail for whatever reason, a row will be inserted into the "failures" table.
 
 Most of the times, the failures are due to timeouts, so calling the parse function again should work.
 There are two functions to do that, one works by block number and the other that by querying the "failures" table and calling the former function for each block on the table.
 The clean up code is pretty self explanatory and a few examples can be seen here:
 ![Example](images/cleanup.png)
+
 
 
 ## A few extra important details

@@ -98,7 +98,7 @@ ets.seqldb.execute('delete from block')
 
 ### Parse Consecutive Range of Blocks
 
-The parseRange function parses a range of blocks. It checks if the block is already on the DB to avoid parsin it twice
+The parseRange function parses a range of blocks. It checks if the block is already on the DB to avoid parsing it twice
 
 ```python
 ets.parseRange(1,  #start
@@ -106,6 +106,7 @@ ets.parseRange(1,  #start
                alias = 'Test', getBalanceInfo=0, SAVE_TO_DB = True, printAtEnd = 0)
 ```
 Suggest setting printAtEnd = 0 because the parse range uses tqdm to track progress
+OBS: this function is perfectly safe to be used more than once in parallel (having many workers runing the same function - I tried with more than 5) but be aware that, if the ranges overlap, you'll get a bunch of Primary key errors on the "failures" table because the check that I mention above is done by creating a list of existing blocks and checking if the block thats about to be parsed is in that list. The function below is more robust in dealing with this situation.
 
 ## Parse an Account
 

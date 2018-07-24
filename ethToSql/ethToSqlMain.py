@@ -255,7 +255,7 @@ class ethToSql():
                 df.to_sql('failures', self.seqldb.seqlEngine, if_exists='append', index=False) if SAVE_TO_DB else None    
         print(datetime.datetime.now() - startTime)
 
-    def parseAccountBlocks(self, acc, alias = '', getBalanceInfo = 0, transLimit = 99999999, updateAlias = 1):
+    def parseAccountBlocks(self, acc, alias = '', getBalanceInfo = 0, transLimit = 100, updateAlias = 1):
         print ('Scanning', acc)
         AccAlias, nTrans  = esParser.getAccountAliasOnEtherScan(acc)
 

@@ -1,6 +1,6 @@
 # EthToSql
 
-This is a package that I built to use on my MSc Dissertation that parses blocks from an Ethereum geth Node, transforms the data into a relational format and inserts them into a relational database. It uses sqlalchemy to interact with the database so it should work with any vendor supported by it. I started the project using Amazon Redshift but given the limited amount of credits I had I moved to Sql Server Express Edition. I can guarantee though that the data collection process works on both.
+This is a package that I built to use on my MSc Dissertation that parses blocks from an Ethereum Node, transforms the data into a relational format and inserts it into a relational database. It uses sqlalchemy to interact with the database so it should work with any vendor supported by it. I started the project using Amazon Redshift but given the limited amount of credits I had I moved to Sql Server Express Edition. I can guarantee though that the data collection process works on both.
 
 Example of how to use it: 
 
@@ -112,8 +112,8 @@ OBS: this function is perfectly safe to be used more than once in parallel (havi
 
 It is also possible to parse all the blocks in wich an account has transactions in.
 That is achieved using BeautifulSoup to parse the HTML from etherscam. 
-There is a hard coded limit of 100 transactions to prevent the function from running "forever" in case of big accounts, but that can be increased by increasing the "translimit" variable.
-The accout's Alias (that string besides the name) is also captured and inserted\updated on the Database if the necessary procedure is created. Can disable that by setting the updateAlias to 0.
+There is a hard coded limit of 100 transactions to prevent the function from running "forever" in case of big accounts, but that can be increased by changing the "translimit" variable.
+The accout's Alias (that string besides the name on Ethersam) is also captured and inserted\updated on the Database if the necessary procedure is created. Can disable that by setting the updateAlias to 0.
 
 ![Example](images/ParseAccount.png)
 
